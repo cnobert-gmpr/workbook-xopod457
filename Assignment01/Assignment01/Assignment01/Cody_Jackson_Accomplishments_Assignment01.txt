@@ -1,0 +1,12 @@
+Cody Jackson Assignment 01 Accomplishments:
+
+Functional Requirements
+
+- Background rendering (loaded through Content Pipeline, matches window size) [2/2]
+- Static image rendering (non-animated image displayed) [2/2]
+- Animated sprite sequence 1 (sprite sheet using SimpleAnimation, different from class example) [4/4]
+- Animated sprite sequence 2 (second, visually distinct animation using SimpleAnimation) [4/4]
+- Text rendering using SpriteFont [2/2]
+- Automatic movement of on-screen content (no player input) [2/2]
+- Keyboard-controlled movement (clear and observable) [3/3]
+- Submission requirements met (GitHub + Brightspace match, completed markers) [1/1]
