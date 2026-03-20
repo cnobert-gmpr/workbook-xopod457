@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SpriteFontPlus;
+
 
 namespace Lesson08MosquitoAttack;
 
@@ -72,6 +71,7 @@ public class MosquitoAttackGame : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _background = Content.Load<Texture2D>("Background");
+        _font = Content.Load<SpriteFont>("SystemArialFont");
 
         _cannon.LoadContent(Content);
 
@@ -79,6 +79,9 @@ public class MosquitoAttackGame : Game
         {
             mosquito.LoadContent(Content);
         }
+
+
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -93,10 +96,15 @@ public class MosquitoAttackGame : Game
                     _cannon.Direction  = new Vector2(1, 0);
                 else
                     _cannon.Direction  = Vector2.Zero;
+                
                 _cannon.Update(gameTime);
                 foreach(Mosquito mosquito in _mosquitoes)
                 {
                     mosquito.Update(gameTime);
+                    if(mosquito.Alive && _cannon.ProcessCollision(mosquito.BoundingBox))
+                    {
+                        mosquito.Die();
+                    }
                 }
 
                 if(Pressed(Keys.P))
