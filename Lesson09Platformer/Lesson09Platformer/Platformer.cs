@@ -7,7 +7,7 @@ namespace Lesson09Platformer;
 public class Platformer : Game
 {
     private const int _WindowWidth = 550, _WindowHeight = 400;
-    internal const int _Gravity = 60;
+    internal const int _Gravity = 100;
     
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
@@ -16,6 +16,9 @@ public class Platformer : Game
         new Rectangle(0, 0, _WindowWidth, _WindowHeight);
 
     private Player _player;
+    private Collider _ground;
+
+private Collider[] _platform01;
 
     public Platformer()
     {
@@ -33,6 +36,13 @@ public class Platformer : Game
         _player = new Player(new Vector2(50,50), _gameBoundingBox);
         _player.Initialize();
 
+        _ground = new Collider(new Vector2(0, 300), new Vector2(_WindowWidth, 1), Collider.ColliderType.Top);
+        _platform01 = new Collider[4];
+        _platform01[0] = new Collider(new Vector2(160, 230), new Vector2(80, 1), Collider.ColliderType.Top);
+        _platform01[1] = new Collider(new Vector2(250, 230), new Vector2(1, 20), Collider.ColliderType.Right);
+        _platform01[2] = new Collider(new Vector2(160, 250), new Vector2(80, 1), Collider.ColliderType.Bottom);
+        _platform01[3] = new Collider(new Vector2(150, 230), new Vector2(1, 20), Collider.ColliderType.Left);
+
         base.Initialize();
     }
 
@@ -40,12 +50,15 @@ public class Platformer : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _player.LoadContent(Content);
-
+        _ground.LoadContent(GraphicsDevice);
+        foreach(Collider c in _platform01)
+            c.LoadContent(GraphicsDevice);
 
     }
 
     protected override void Update(GameTime gameTime)
     {
+        #region input
         KeyboardState kbState = Keyboard.GetState();
         if(kbState.IsKeyDown(Keys.A))
             _player.MoveHorizontally(-1);
@@ -53,6 +66,13 @@ public class Platformer : Game
             _player.MoveHorizontally(1);
         else
             _player.Stop();
+
+        if(kbState.IsKeyDown(Keys.Space))
+            _player.Jump();
+        #endregion
+        _ground.ProcessCollision(_player, gameTime);
+        foreach(Collider c in _platform01)
+            c.ProcessCollision(_player, gameTime);
         _player.Update(gameTime);
 
 
@@ -65,6 +85,9 @@ public class Platformer : Game
 
         _spriteBatch.Begin();
         _player.Draw(_spriteBatch);
+        _ground.Draw(_spriteBatch);
+        foreach(Collider c in _platform01)
+            c.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);

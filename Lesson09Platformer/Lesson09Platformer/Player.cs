@@ -8,7 +8,7 @@ namespace Lesson09Platformer;
 
     public class Player
     {
-        private const int _Speed = 150;
+        private const int _Speed = 150, _JumpVelocity = -150;
         private enum State{Idle, Walking, Jumping}
         private State _state;
         private bool _faceingRight = true;
@@ -17,6 +17,8 @@ namespace Lesson09Platformer;
         private Vector2 _position, _velocity, _dimensions;
     
     private Rectangle _gameBoundingBox;
+
+    internal Vector2 Velocity {get => _velocity;}
 
     internal Rectangle BoundingBox
     {
@@ -27,7 +29,7 @@ namespace Lesson09Platformer;
     {
         _position = position;
         _gameBoundingBox = gameBoundingBox;
-        _dimensions = new Vector2(46, 40);
+        _dimensions = new Vector2(35, 34);
     }
 
     internal void Initialize()
@@ -102,7 +104,9 @@ namespace Lesson09Platformer;
     {
         bool originalDirection = _faceingRight;
         _velocity.X = direction * _Speed;
-        _faceingRight = _velocity.X > 0;
+        if(_velocity.X != 0)
+            _faceingRight = _velocity.X > 0;
+
         if(_state == State.Idle)
         {
             _animationCurrent = _animationWalk;
@@ -112,7 +116,10 @@ namespace Lesson09Platformer;
         if(originalDirection != _faceingRight)
             _animationCurrent.Reset();
     }
-
+internal void MoveVertically(float direction)
+    {
+        _velocity.Y = direction * _Speed;
+    }
 
     internal void Stop()
     {
@@ -123,4 +130,28 @@ namespace Lesson09Platformer;
             _state = State.Idle;
         }
     }
+
+    internal void Land(Rectangle whatILandedOn)
+    {
+        if(_state == State.Jumping)
+        {
+            _position.Y = whatILandedOn.Top - _dimensions.Y + 1;
+            _velocity.Y = 0;
+            _state = State.Walking;
+            _animationCurrent = _animationWalk;
+            _animationCurrent.Reset();
+
+        }
     }
+    internal void StandOn(Rectangle whatImStandingOn, float dt)
+    {
+        _velocity.Y -= Platformer._Gravity * dt;
+    
+    }
+
+    internal void Jump()
+    {
+        if(_state != State.Jumping)
+            _velocity.Y = _JumpVelocity;
+    }
+}
