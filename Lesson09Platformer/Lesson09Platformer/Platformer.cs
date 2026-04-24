@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -18,7 +20,7 @@ public class Platformer : Game
     private Player _player;
     private Collider _ground;
 
-private Collider[] _platform01;
+private List<Platform> _platforms;
 
     public Platformer()
     {
@@ -36,12 +38,15 @@ private Collider[] _platform01;
         _player = new Player(new Vector2(50,50), _gameBoundingBox);
         _player.Initialize();
 
-        _ground = new Collider(new Vector2(0, 300), new Vector2(_WindowWidth, 1), Collider.ColliderType.Top);
-        _platform01 = new Collider[4];
-        _platform01[0] = new Collider(new Vector2(160, 230), new Vector2(80, 1), Collider.ColliderType.Top);
-        _platform01[1] = new Collider(new Vector2(250, 230), new Vector2(1, 20), Collider.ColliderType.Right);
-        _platform01[2] = new Collider(new Vector2(160, 250), new Vector2(80, 1), Collider.ColliderType.Bottom);
-        _platform01[3] = new Collider(new Vector2(150, 230), new Vector2(1, 20), Collider.ColliderType.Left);
+        _ground = new Collider(new Vector2(0, 300), new Vector2(_WindowWidth, 1), ColliderType.Top);
+
+        _platforms = new List<Platform>();
+        _platforms.Add(new Platform(new Vector2(100, 250), new Vector2(100, 10)));
+        _platforms.Add(new Platform(new Vector2(300, 150), new Vector2(100, 10)));
+        _platforms.Add(new Platform(new Vector2(200, 200), new Vector2(100, 10)));
+        _platforms.Add(new Platform(new Vector2(400, 50), new Vector2(100, 10)));
+        _platforms.Add(new Platform(new Vector2(100, 100), new Vector2(100, 30)));
+        
 
         base.Initialize();
     }
@@ -51,8 +56,8 @@ private Collider[] _platform01;
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _player.LoadContent(Content);
         _ground.LoadContent(GraphicsDevice);
-        foreach(Collider c in _platform01)
-            c.LoadContent(GraphicsDevice);
+        foreach(Platform p in _platforms)
+            p.LoadContent(GraphicsDevice);
 
     }
 
@@ -71,8 +76,8 @@ private Collider[] _platform01;
             _player.Jump();
         #endregion
         _ground.ProcessCollision(_player, gameTime);
-        foreach(Collider c in _platform01)
-            c.ProcessCollision(_player, gameTime);
+        foreach(Platform p in _platforms)
+            p.ProcessCollisions(_player, gameTime);
         _player.Update(gameTime);
 
 
@@ -86,8 +91,8 @@ private Collider[] _platform01;
         _spriteBatch.Begin();
         _player.Draw(_spriteBatch);
         _ground.Draw(_spriteBatch);
-        foreach(Collider c in _platform01)
-            c.Draw(_spriteBatch);
+        foreach(Platform p in _platforms)
+            p.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
